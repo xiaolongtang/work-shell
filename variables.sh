@@ -29,6 +29,10 @@ CONFIG_PORT_UAT3=8988
 GATEWAY_PORT_UAT1=8080
 GATEWAY_PORT_UAT3=8180
 
+# 配置中心地址配置
+CONFIG_SERVER_URL_UAT1="http://localhost:8888"
+CONFIG_SERVER_URL_UAT3="http://localhost:18888"
+
 # 获取环境对应的部署路径
 get_deploy_path() {
     local env=$1
@@ -124,6 +128,15 @@ get_java_opts() {
     local port=$(get_service_port ${env} ${service})
     if [ ! -z "${port}" ]; then
         JAVA_OPTS="${JAVA_OPTS} -Dserver.port=${port}"
+    fi
+    
+    # 配置中心地址配置（除了eureka-server和config-server外的服务）
+    if [ "${service}" != "eureka-server" ] && [ "${service}" != "config-server" ]; then
+        if [ "${env}" == "uat1" ]; then
+            JAVA_OPTS="${JAVA_OPTS} -Dspring.cloud.config.uri=${CONFIG_SERVER_URL_UAT1}"
+        elif [ "${env}" == "uat3" ]; then
+            JAVA_OPTS="${JAVA_OPTS} -Dspring.cloud.config.uri=${CONFIG_SERVER_URL_UAT3}"
+        fi
     fi
     
     echo ${JAVA_OPTS}
