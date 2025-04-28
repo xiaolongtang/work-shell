@@ -138,6 +138,15 @@ get_java_opts() {
             JAVA_OPTS="${JAVA_OPTS} -Dspring.cloud.config.uri=${CONFIG_SERVER_URL_UAT3}"
         fi
     fi
+
+    # Eureka服务器地址配置（除了eureka-server外的所有服务）
+    if [ "${service}" != "eureka-server" ]; then
+        if [ "${env}" == "uat1" ]; then
+            JAVA_OPTS="${JAVA_OPTS} -Deureka.client.serviceUrl.defaultZone=http://localhost:${EUREKA_PORT_UAT1}/eureka/"
+        elif [ "${env}" == "uat3" ]; then
+            JAVA_OPTS="${JAVA_OPTS} -Deureka.client.serviceUrl.defaultZone=http://localhost:18761/eureka/"
+        fi
+    fi
     
     echo ${JAVA_OPTS}
 }
